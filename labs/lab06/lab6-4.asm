@@ -1,44 +1,39 @@
-;--------------------------------
-; Программа вычисления выражения y = (2 + x)^2
-;--------------------------------
-%include 'in_out.asm' ; подключение внешнего файла
+%include 'in_out.asm'
 
 SECTION .data
-msg DB 'Введите значение x: ', 0 ; сообщение запроса на ввод
-result_msg DB 'Результат: ', 0 ; сообщение с результатом
+msg: DB 'Введите значение x: ', 0
+rem: DB 'Вывод: ', 0
+
 SECTION .bss
-x resb 4 ; резервируем место для переменной x (предположим, что x целое)
+x: RESB 80
 
 SECTION .text
 GLOBAL _start
+
 _start:
-
-    ; ---- Вывод запроса на ввод
     mov eax, msg
-    call sprintLF ; печатаем запрос "Введите значение x: "
+    call sprintLF
 
-    ; ---- Ввод значения x с клавиатуры
-    mov eax, x     ; Адрес переменной x
-    mov ecx, x     ; Указатель на переменную x (буфер ввода)
-    mov edx, 80    ; Размер буфера (максимальная длина ввода)
-    call sread     ; Чтение строки с клавиатуры
+    mov ecx, x
+    mov edx, 80
+    call sread
 
-    ; ---- Преобразуем строку в число
-    ; Допустим, что вводим 1 цифру (первый символ строки - число)
-    mov al, [x]    ; Загружаем первый символ (предполагаем, что это цифра)
-    sub al, '0'     ; Преобразуем символ в число (например, '3' -> 3)
-    mov eax, edx   ; Сохраняем значение x в eax
+    mov eax, x
+    call atoi 
 
-    ; ---- Вычисляем (x + 2) ^ 2
-    add eax, 2      ; EAX = x + 2
-    mov ebx, eax    ; Сохраняем (x + 2) в ebx
-    mul ebx         ; EAX = (x + 2) * (x + 2)
+    xor edx, edx        ; Обнуляем edx перед умножением
+    add eax, 2          ; eax = x + 2
+    imul eax, eax       ; eax = (x + 2) * (x + 2)
 
-    ; ---- Вывод результата
-    mov eax, result_msg
-    call sprintLF   ; Печатаем сообщение "Результат: "
-    mov eax, ebx    ; Результат в ebx
-    call iprintLF   ; Выводим результат
+    mov ebx, eax       
+    mov eax, rem
+    call sprint         
+    mov eax, ebx        
+    call iprintLF     
+    
+    call quit
 
-    call quit       ; Завершаем программу
+
+
+
 
